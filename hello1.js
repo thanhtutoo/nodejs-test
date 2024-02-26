@@ -1,10 +1,9 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const { convert } = require('pem-jwk');
 const crypto = require('crypto');
 
-// Configure the AWS SDK with your credentials
+// Configure the AWS SDK with credentials
 AWS.config.update({
   accessKeyId: 'AKIATRRYQYKZRJNHKY22',
   secretAccessKey: 'aCYxqEswsC+hYWGdIF6OijV8Yl6KEHNWqmPe52Q7',
@@ -25,7 +24,7 @@ module.exports.hello = async (event) => {
     const certificatePem = certificateData.Body.toString();
 
     // Step 2: Extract Public Key from Certificate
-    const publicKey = convert(certificatePem, { outputFormat: 'public' });
+    const publicKey = getPublicKey(certificatePem);
 
     // Step 3: Extract CommonName from Certificate Subject
     const commonName = extractCommonName(certificatePem);
@@ -46,6 +45,18 @@ module.exports.hello = async (event) => {
   }
 };
 
+
+function getPublicKey(certificatePem) {
+  return new Promise((resolve, reject) => {
+    pem.getPublicKey(certificatePem, (err, key) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(key.publicKey);
+      }
+    });
+  });
+}
 
 function extractCommonName(certificatePem) {
   // Implement the logic to extract CommonName from the certificate subject
@@ -99,7 +110,7 @@ async function writeToDynamoDB(commonName, signature, tableName) {
     },
   };
 
-  await dynamodb.putItem(params, (err, data) => {
+  dynamodb.putItem(params, (err, data) => {
     if (err) {
       console.error('Error writing to DynamoDB:', err);
     } else {
