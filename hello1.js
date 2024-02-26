@@ -5,8 +5,8 @@ const crypto = require('crypto');
 
 // Configure the AWS SDK with credentials
 AWS.config.update({
-  accessKeyId: 'AKIATRRYQYKZRJNHKY22',
-  secretAccessKey: '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',
+  accessKeyId: '',
+  secretAccessKey: '',
   region: 'ap-south-1',
 });
 
